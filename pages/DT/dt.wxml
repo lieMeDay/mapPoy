@@ -1,0 +1,4 @@
+<map id="map" longitude="{{longitude}}" latitude="{{latitude}}" markers="{{markers}}" polyline="{{polyline}}" enable-rotate show-location style="width: 100%; height: 100%;position:absolute;"></map>
+<!-- scale="{{scaletrue}}"  -->
+<button bindtap="start">开始获取</button>
+<button bindtap="end">关闭获取</button>
