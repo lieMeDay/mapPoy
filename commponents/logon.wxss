@@ -1,0 +1,53 @@
+/* commponents/logon.wxss */
+.headWrap {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #ffffff;
+  z-index: 10;
+}
+.headView {
+  margin: 90rpx 50rpx;
+}
+
+.headImageView {
+  display: block;
+  margin-left: 25px;
+  margin-right: 25px;
+  margin-top: 25px;
+  margin-bottom: 0;
+  height: 50px;
+  text-align: center;
+}
+
+.headImage {
+  /* display: flex; */
+  width: 50px;
+  height: 50px;
+}
+
+.titleText {
+  margin: 25px 0 10px 25px;
+  font-size: 14px;
+  text-align: center;
+  color: #020E0F;
+}
+
+.contentText {
+  margin-left: 25px;
+  margin-top: 0px;
+  margin-bottom: 0;
+  font-size: 14px;
+  text-align: center;
+  color: #666;
+}
+
+.authBtn {
+  margin-top: 35px;
+  margin-left: 25px;
+  margin-right: 25px;
+  height: 45px;
+  font-size: 17.5px;
+}

@@ -1,4 +1,43 @@
-<map id="map" longitude="{{longitude}}" latitude="{{latitude}}" markers="{{markers}}" polyline="{{polyline}}" enable-rotate show-location style="width: 100%; height: 100%;position:absolute;"></map>
-<!-- scale="{{scaletrue}}"  -->
-<button bindtap="start">开始获取</button>
-<button bindtap="end">关闭获取</button>
+<view>
+	<logon wx:if="{{!hasUserInfo&& canIUse}}" bind:ForUserMsg='getUserMsg'></logon>
+	<view class="mapBox">
+		<map id="map" longitude="{{longitude}}" latitude="{{latitude}}" markers="{{markers}}" polyline="{{polyline}}" enable-rotate show-location style="width: 100%; height: 100%;position:absolute;"></map>
+		<!-- scale="{{scaletrue}}"  -->
+	</view>
+	<view class="UserWrap">
+		<view class="btnCirle">
+			<view wx:if="{{!beginEnd}}" bindtap="start">开始</view>
+			<view wx:else bindtap="end">结束</view>
+		</view>
+		<view class="userBox">
+			<view class="v v1">
+				<image src="{{userInfo.avatarUrl}}" class="userinfo_img"></image>
+			</view>
+			<view class="v v2">
+        <view>{{userInfo.nickName}}</view>
+        <view>10:10:10</view>
+			</view>
+		</view>
+    <view class="msg">
+        <view>
+        <view>距离</view>
+        <view class="b">{{distance}}KM</view>
+        </view>
+        <view>
+        <view>用时</view>
+        <view  class="b">{{useTrueTime}}</view>
+        </view>
+        <view>
+        <view>配速</view>
+        <view  class="b">{{speed}}</view>
+        </view>
+    </view>
+		<!-- <button bindtap="goSQ" wx:if="{{showSQ}}">去授权</button> -->
+		<!-- <button bindtap="start">开始获取</button>
+<button bindtap="end">关闭获取</button> -->
+		<!-- <view class="dis">
+<view>距离：{{distance}}</view>
+<view>速度：{{speed}}</view>
+</view> -->
+	</view>
+</view>

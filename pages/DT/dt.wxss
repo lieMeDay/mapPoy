@@ -1,0 +1,62 @@
+.dis{
+  position: absolute;
+  z-index: 100;
+}
+.mapBox{
+  width: 100%;
+  height: 65%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.UserWrap{
+  width: 100%;
+  height: 35%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+.btnCirle{
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 50%;
+  background-color: paleturquoise;
+  margin: 0 auto;
+  margin-top: -100rpx;
+  text-align: center;
+  line-height: 200rpx;
+}
+.timeBox{
+  width: 100%;
+  text-align: center;
+  margin: 10rpx 0;
+}
+.userBox{
+  display: flex;
+  align-items:center;
+  /* justify-content:space-around; */
+}
+/* .v1{
+  display: flex;
+  flex-direction:column;
+} */
+
+/* .v.v3{
+  flex: 2;
+} */
+.userinfo_img {
+  width: 128rpx;
+  height: 128rpx;
+  margin: 20rpx;
+  border-radius: 50%;
+}
+.msg{
+  display: flex;
+  align-items:center;
+  justify-content:space-around;
+  text-align: center;
+}
+.b{
+  font-size: 20px;
+  font-weight: 500;
+}

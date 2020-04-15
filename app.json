@@ -1,8 +1,7 @@
 {
   
     "pages": [
-      "pages/DT/dt",
-      "pages/aa/aa"
+      "pages/DT/dt"
     ],
   "window": {
     "backgroundTextStyle": "light",
@@ -14,10 +13,7 @@
   "permission": {
     "scope.userLocation": {
       "desc": "你的位置信息将用于小程序位置接口的效果展示"
-    },
-    "requiredBackgroundModes": [
-      "location"
-     ]
-  }
-
+    }
+  },
+  "requiredBackgroundModes": ["location"]
 }
