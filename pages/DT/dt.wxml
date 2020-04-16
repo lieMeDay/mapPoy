@@ -9,35 +9,57 @@
 			<view wx:if="{{!beginEnd}}" bindtap="start">开始</view>
 			<view wx:else bindtap="end">结束</view>
 		</view>
-		<view class="userBox">
-			<view class="v v1">
-				<image src="{{userInfo.avatarUrl}}" class="userinfo_img"></image>
+		<view class="userCon">
+			<view class="Left">
+				<view class="userBox">
+					<view class="v v1">
+						<image src="{{userInfo.avatarUrl}}" class="userinfo_img"></image>
+					</view>
+					<view class="v v2">
+						<view>{{userInfo.nickName}}</view>
+						<view class="dateTime">{{nowDate}}</view>
+					</view>
+				</view>
 			</view>
-			<view class="v v2">
-        <view>{{userInfo.nickName}}</view>
-        <view>10:10:10</view>
+			<view class="lineBtn" bindtap="taggleAlert">
+				分段详情
 			</view>
 		</view>
-    <view class="msg">
-        <view>
-        <view>距离</view>
-        <view class="b">{{distance}}KM</view>
-        </view>
-        <view>
-        <view>用时</view>
-        <view  class="b">{{useTrueTime}}</view>
-        </view>
-        <view>
-        <view>配速</view>
-        <view  class="b">{{speed}}</view>
-        </view>
-    </view>
-		<!-- <button bindtap="goSQ" wx:if="{{showSQ}}">去授权</button> -->
-		<!-- <button bindtap="start">开始获取</button>
-<button bindtap="end">关闭获取</button> -->
-		<!-- <view class="dis">
-<view>距离：{{distance}}</view>
-<view>速度：{{speed}}</view>
-</view> -->
+		<view class="msg">
+			<view>
+				<view>距离</view>
+				<view class="b">{{distance}}KM</view>
+			</view>
+			<view>
+				<view>用时</view>
+				<view class="b">{{useTrueTime}}</view>
+			</view>
+			<view>
+				<view>配速</view>
+				<view class="b">{{speed}}</view>
+			</view>
+		</view>
+	</view>
+	<view class="alertWrap" style="transition:height 0.3s ease;height:{{showAlert?'100%':'0'}};">
+		<view class="alertBox">
+			<view class="closeBox">
+				<image src="/images/close.png" class="closeImg" bindtap="forAlert" bindtap="taggleAlert"></image>
+			</view>
+			<view class="alertCon">
+				<view class="alertTit">
+					<view>段数</view>
+					<view>距离</view>
+					<view>用时</view>
+					<view>平均配速</view>
+				</view>
+				<view class="showCon" wx:for="{{partArr}}" wx:key="index">
+					<view>{{item.Num}}</view>
+					<view>{{item.dd}}KM</view>
+					<view>{{item.useTime}}</view>
+					<view>{{item.meanPace}}</view>
+				</view>
+				<view class="showCon" wx:if="{{partArr.length==0}}">暂无数据</view>
+			</view>
+		</view>
 	</view>
 </view>

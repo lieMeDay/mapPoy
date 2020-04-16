@@ -2,6 +2,12 @@
 var utils = require('./utils/util.js')
 App({
   onLaunch: function () {
+    wx.removeStorage({
+      key: 'paobugji',
+      success (res) {
+        console.log(res)
+      }
+    })
     // 展示本地存储能力
     var logs = wx.getStorageSync('logs') || []
     logs.unshift(Date.now())
