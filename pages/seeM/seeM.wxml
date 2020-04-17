@@ -1,14 +1,9 @@
 <view>
-	<logon wx:if="{{!hasUserInfo&& canIUse}}" bind:ForUserMsg='getUserMsg'></logon>
 	<view class="mapBox">
 		<map id="map" longitude="{{longitude}}" latitude="{{latitude}}" markers="{{markers}}" polyline="{{polyline}}" enable-rotate show-location style="width: 100%; height: 100%;position:absolute;"></map>
 		<!-- scale="{{scaletrue}}"  -->
 	</view>
 	<view class="UserWrap">
-		<view class="btnCirle">
-			<view wx:if="{{!beginEnd}}" bindtap="start">开始</view>
-			<view wx:else bindtap="end">结束</view>
-		</view>
 		<view class="userCon">
 			<view class="Left">
 				<view class="userBox">
@@ -38,9 +33,6 @@
 				<view>配速</view>
 				<view class="b">{{speed}}</view>
 			</view>
-		</view>
-		<view class="hisBtn">
-		<navigator wx:if="{{!beginEnd}}" url="/pages/history/history?openId={{openId}}" hover-class="none">查看历史活动>></navigator>
 		</view>
 	</view>
 	<view class="alertWrap" style="transition:height 0.3s ease;height:{{showAlert?'100%':'0'}};">

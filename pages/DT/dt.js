@@ -1,12 +1,17 @@
 // pages/aa/aa.js
 const app = getApp()
 var util = require('../../utils/util.js')
+let {
+  tool
+} = getApp()
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
+    openId: '',
+    openKey: '',
     nowDate: '', //当前时间
     timer: '', //计时器 计时时间
     useTime: 0, //使用时间 秒数
@@ -25,6 +30,8 @@ Page({
       width: 2,
       // dottedLine: false
     }], //线
+    objStorage: [], //每次点开始时为空，清掉上一次的
+    putN: 1, //向后台发送数据次数
     distance: '0.00', //距离
     speed: "--'--\"", //配速
     showAlert: false, //是否显示分段
@@ -32,12 +39,23 @@ Page({
   },
   // onload 获取授权
   getuser() {
+    if (app.globalData.openId) {
+      this.setData({
+        openId: app.globalData.openId,
+      })
+    } else {
+      app.CallbackFn = res => {
+        this.setData({
+          openId: res.data.data.openid
+        })
+      }
+    }
     if (app.globalData.userInfo) {
       this.setData({
         userInfo: app.globalData.userInfo,
         hasUserInfo: true
       })
-      this.getLoc()
+      this.getLoc(1)
     } else if (this.data.canIUse) {
       // 由于 getUserInfo 是网络请求，可能会在 Page.onLoad 之后才返回
       // 所以此处加入 callback 以防止这种情况
@@ -46,7 +64,7 @@ Page({
           userInfo: res.userInfo,
           hasUserInfo: true
         })
-        this.getLoc()
+        this.getLoc(1)
       }
     } else {
       // 在没有 open-type=getUserInfo 版本的兼容处理
@@ -57,7 +75,7 @@ Page({
             userInfo: res.userInfo,
             hasUserInfo: true
           })
-          this.getLoc()
+          this.getLoc(1)
         }
       })
     }
@@ -69,13 +87,13 @@ Page({
       hasUserInfo: true,
       userInfo: e.detail
     });
-    this.getLoc()
+    this.getLoc(1)
   },
   // 定位授权
-  getLoc() {
+  getLoc(i) {
     let that = this
     wx.getLocation({
-      type: 'wgs84',
+      type: 'gcj02',
       success(res) {
         console.log(res)
         const latitude = res.latitude
@@ -87,84 +105,139 @@ Page({
           latitude: latitude,
           markers: [longitude, latitude]
         })
-      }
-    })
-    wx.startLocationUpdate({
-      success(res) {
-        console.log('开启后台定位', res)
       },
-      fail(res) {
-        console.log('开启后台定位失败', res)
+      fail(err) {
+        console.log(err)
+        that.setData({
+          longitude: 116.397128,
+          latitude: 39.916527,
+          markers: [116.397128, 39.916527]
+        })
       }
     })
-    that.startLB()
+    /*
+    当i==1时为首次进入 获取前后台定位权限
+    不为 1 时，只重新定位获取当前位置
+     */
+    if (i == 1) {
+      that.startL()
+      that.startLB()
+    }
   },
+  // 点击开始
   start() {
     let that = this
-    let arr = []
-    let obj = []
     wx.getSetting({
       success(res) {
         console.log(res.authSetting)
         let ULB = res.authSetting
         if (ULB.hasOwnProperty('scope.userLocationBackground')) {
           that.setData({
-            beginEnd: true
+            openKey: util.getNowDate(new Date())
           })
-          if (that.data.timer == '') {
-            that.data.timer = setInterval(
-              function () {
-                var numVal = that.data.useTime + 1;
-                that.setData({
-                  useTime: numVal,
-                  useTrueTime: that.formatSeconds(numVal)
-                });
-              }, 1000);
+          // `/run/addPerson?openId=${that.data.openId}&openKey=${that.data.openKey}`,
+          let jsonData = {
+            openId: that.data.openId,
+            openKey: that.data.openKey
           }
-          if (!that.data.state) {
+          tool({
+            url: '/run/addPerson',
+            data: JSON.stringify(jsonData),
+            method: "POST"
+          }).then(resolve => {
+            console.log(resolve.data)
             that.setData({
-              state: true
+              beginEnd: true
             })
-            let trueDis = 0
-            wx.onLocationChange(function (res) {
-              // console.log('location change', res)
-              arr.push({
-                longitude: res.longitude,
-                latitude: res.latitude
+            if (that.data.timer == '') {
+              that.data.timer = setInterval(
+                function () {
+                  var numVal = that.data.useTime + 1;
+                  that.setData({
+                    useTime: numVal,
+                    useTrueTime: that.formatSeconds(numVal)
+                  });
+                }, 1000);
+            }
+            if (!that.data.state) {
+              let arr = []
+              that.setData({
+                state: true
               })
-              let dis = Number(that.data.distance)
-              if (arr.length > 1) {
-                if (res.speed != 0) {
-                  let aa = arr[arr.length - 2]
-                  let bb = arr[arr.length - 1]
-                  // console.log('trueDis='+trueDis,'dis='+dis,'aa='+Number(util.getDistance(aa.latitude, aa.longitude, bb.latitude, bb.longitude)))
-                  trueDis += Number(util.getDistance(aa.latitude, aa.longitude, bb.latitude, bb.longitude))
-                  // console.log(trueDis,'-------',dis)
-                  dis = Number(trueDis).toFixed(2)
+              let trueDis = 0
+              wx.onLocationChange(function (res) {
+                // console.log('location change', res)
+                arr.push({
+                  longitude: res.longitude,
+                  latitude: res.latitude
+                })
+                let dis = Number(that.data.distance)
+                if (arr.length > 1) {
+                  if (res.speed != 0) {
+                    let aa = arr[arr.length - 2]
+                    let bb = arr[arr.length - 1]
+                    // console.log('trueDis='+trueDis,'dis='+dis,'aa='+Number(util.getDistance(aa.latitude, aa.longitude, bb.latitude, bb.longitude)))
+                    trueDis += Number(util.getDistance(aa.latitude, aa.longitude, bb.latitude, bb.longitude))
+                    // console.log(trueDis,'-------',dis)
+                    dis = Number(trueDis).toFixed(2)
+                  }
                 }
-              }
-              let tt = (that.data.useTime / 60).toFixed(2)
+                let tt = (that.data.useTime / 60).toFixed(2)
+                that.setData({
+                  distance: dis,
+                  speed: tt > 0 && dis > 0 ? that.forPace(tt / dis) : "--'--\""
+                })
+                // 毫秒 速度 经度 纬度 距离
+                that.data.objStorage.push(new Date().getTime() + '...' + res.speed + '...' + res.longitude + '...' + res.latitude + '...' + dis)
+                wx.setStorage({
+                  key: 'paobugji',
+                  data: that.data.objStorage
+                })
+                wx.getStorage({
+                  key: 'paobugji',
+                  success(res) {
+                    let startTime = Number(res.data[0].split('...')[0])
+                    let nn = that.data.putN
+                    if (res.data.length >= 100 * nn) {
+                      let newList = res.data.slice(100 * (nn - 1), 100 * nn)
+                      that.postPoyMsg(newList, startTime)
+                    }
+                  }
+                })
+
+                // console.log(arr[arr.length - 1])
+                that.setData({
+                  markers: arr[arr.length - 1],
+                  longitude: arr[arr.length - 1]['longitude'],
+                  latitude: arr[arr.length - 1]['latitude'],
+                  'polyline[0].points': arr
+                })
+              })
+            } else {
+              // that.setData({state: false })
+              that.startLB()
+              that.startL()
+              // 结束后重新开始 所有都归零
               that.setData({
-                distance: dis,
-                speed: tt > 0 && dis > 0 ? that.forPace(tt / dis) : "--'--\""
+                useTime: 0, //时间为0
+                useTrueTime: '00:00:00', // 将useTime转为时分秒
+                'polyline[0].points': [], //线为空
+                distance: '0.00', //距离
+                speed: "--'--\"", //配速
+                partArr: [] //分段数据
               })
-              obj.push(new Date().getTime() + '...' + res.speed + '...' + res.longitude + '...' + res.latitude + '...' + dis)
-              wx.setStorage({
-                key: "paobugji",
-                data: obj
+              // 重新获取定位 2 为随便传 只要不为 1 
+              that.getLoc(2)
+              // 清除上一次的storage
+              wx.removeStorage({
+                key: 'paobugji',
+                success(res) {
+                  console.log(res)
+                  that.data.objStorage = []
+                }
               })
-              // console.log(arr[arr.length - 1])
-              that.setData({
-                markers: arr[arr.length - 1],
-                longitude: arr[arr.length - 1]['longitude'],
-                latitude: arr[arr.length - 1]['latitude'],
-                'polyline[0].points': arr
-              })
-            })
-          } else {
-            // that.setData({state: false })
-            that.startLB()
-          }
+            }
+          })
         } else {
           that.setData({
             beginEnd: false
@@ -172,7 +245,7 @@ Page({
           console.log('授权')
           wx.showModal({
             title: '提示',
-            content: '请选择使用时和离开后',
+            content: '请在位置设置中选择使用小程序期间和离开小程序后',
             showCancel: false,
             success(res) {
               if (res.confirm) {
@@ -185,6 +258,7 @@ Page({
       }
     })
   },
+  // 点击结束
   end() {
     let that = this
     clearInterval(that.data.timer)
@@ -196,6 +270,15 @@ Page({
       beginEnd: false,
       speed: tt > 0 && dd > 0 ? that.forPace(tt / dd) : "--'--\""
     })
+    wx.getStorage({
+      key: 'paobugji',
+      success(res) {
+        let startTime = Number(res.data[0].split('...')[0])
+        let nn = that.data.putN
+        let newList = res.data.slice(100 * (nn - 1), res.data.length)
+        that.postPoyMsg(newList, startTime)
+      }
+    })
     wx.stopLocationUpdate({
       success(res) {
         console.log('关闭后台定位', res)
@@ -205,6 +288,45 @@ Page({
       }
     })
   },
+  // 添加上传轨迹信息
+  postPoyMsg(newList, startTime) {
+    let that = this
+    let emptyRRA = []
+    newList.forEach(v => {
+      let emptyJBO = {
+        openId: that.data.openId,
+        openKey: that.data.openKey,
+        time: v.split('...')[0],
+        longitude: v.split('...')[2],
+        latitude: v.split('...')[3],
+        distance: v.split('...')[4],
+        useTime: Number(v.split('...')[0]) - startTime
+      }
+      emptyRRA.push(emptyJBO)
+    })
+    that.setData({
+      putN: ++that.data.putN
+    })
+    tool({
+      url: "/run/addPersonData",
+      method: "POST",
+      data: emptyRRA,
+    }).then(suc => {
+      console.log(suc)
+    })
+  },
+  // 开启前台获取定位
+  startL() {
+    wx.startLocationUpdate({
+      success(res) {
+        console.log('开启小程序进入前台时接收位置消息', res)
+      },
+      fail(res) {
+        console.log('开启小程序进入前台时接收位置消息失败', res)
+      }
+    })
+  },
+  // 开启后台获取定位
   startLB() {
     let that = this
     wx.startLocationUpdateBackground({
@@ -215,20 +337,21 @@ Page({
       },
       fail(res) {
         console.log('开启后台定位失败', res)
-        // wx.showModal({
-        //   title: '提示',
-        //   content: '请选择使用时和离开后',
-        //   showCancel: false,
-        //   success(res) {
-        //     if (res.confirm) {
-        //       console.log('用户点击确定')
-        //       that.goSQ()
-        //     }
-        //   }
-        // })
+        wx.showModal({
+          title: '提示',
+          content: '请在位置设置中选择使用小程序期间和离开小程序后',
+          showCancel: false,
+          success(res) {
+            if (res.confirm) {
+              console.log('用户点击确定')
+              that.goSQ()
+            }
+          }
+        })
       }
     })
   },
+  // 打开 openSetting 选择使用时和离开后
   goSQ() {
     let that = this
     wx.openSetting({
@@ -238,7 +361,7 @@ Page({
         if (!ULB.hasOwnProperty('scope.userLocationBackground')) {
           wx.showModal({
             title: '提示',
-            content: '请选择使用时和离开后',
+            content: '请在位置设置中选择使用小程序期间和离开小程序后',
             showCancel: false,
             success(res) {
               if (res.confirm) {
@@ -287,7 +410,7 @@ Page({
   },
   // 是否显示分段
   taggleAlert() {
-    if(!this.data.showAlert){
+    if (!this.data.showAlert) {
       this.getpoint()
     }
     this.setData({
@@ -307,7 +430,7 @@ Page({
         let lastData = res.data[res.data.length - 1].split('...')
         let lastDis = lastData[lastData.length - 1]
         // let lastDis=3.2
-        console.log('lastDis='+lastDis)
+        console.log('lastDis=' + lastDis)
         // 最终距离为0 没有分段
         if (lastDis == 0) {
           that.setData({
@@ -321,7 +444,7 @@ Page({
               n++
               // i 最接近该距离的下标
               let i = util.lookupNear(disArr, n)
-              let hm=0
+              let hm = 0
               // 所用时间秒
               if (n == 1) {
                 hm = parseInt(Number(res.data[i].split('...')[0] - res.data[0].split('...')[0]) / 1000)
@@ -331,18 +454,18 @@ Page({
               // console.log(hm)
               smArr.push({
                 Num: n,
-                dd: '1KM',
+                dd: '1',
                 useTime: that.formatSeconds(hm),
                 meanPace: that.forPace((hm / 60) / 1)
               })
             }
-            if (util.floatSub(lastDis,lB) > 0) {
+            if (util.floatSub(lastDis, lB) > 0) {
               let hm = parseInt(Number(res.data[res.data.length - 1].split('...')[0] - res.data[util.lookupNear(disArr, n)].split('...')[0]) / 1000)
               smArr.push({
                 Num: ++n,
-                dd: util.floatSub(lastDis,lB),
+                dd: util.floatSub(lastDis, lB),
                 useTime: that.formatSeconds(hm),
-                meanPace: that.forPace((hm / 60) / util.floatSub(lastDis,lB))
+                meanPace: that.forPace((hm / 60) / util.floatSub(lastDis, lB))
               })
             }
             smArr.push({
@@ -351,13 +474,13 @@ Page({
               useTime: that.data.useTrueTime,
               meanPace: that.forPace((that.data.useTime / 60) / lastDis)
             })
-          }else{
+          } else {
             smArr.push({
               Num: 1,
               dd: lastDis,
               useTime: that.data.useTrueTime,
               meanPace: that.forPace((that.data.useTime / 60) / lastDis)
-            },{
+            }, {
               Num: '总计',
               dd: lastDis,
               useTime: that.data.useTrueTime,
@@ -381,7 +504,10 @@ Page({
    */
   onLoad: function (options) {
     let that = this
-    // console.log('onload')
+    // tool({url:"/j/subject_abstrat",data:{subject_id: 2364086}}).then(res=>{
+    //   let {data}=res
+    //   console.log(data)
+    // })
     // 获取用户信息
     that.getuser()
     that.setData({

@@ -1,0 +1,37 @@
+/* pages/history.wxss */
+.listBox {
+  width: 100%;
+  line-height: 100rpx;
+  border-bottom: 1px solid #444444;
+  background-color: #2f2f2f;
+  color: #fff;
+  display: flex;
+}
+
+.listCon {
+  width: calc(100% - 80rpx);
+  height: 100rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  text-align: center;
+}
+
+.more {
+  width: 80rpx;
+  height: 100rpx;
+  float: right;
+  text-align: center;
+  overflow: hidden;
+}
+.more image{
+  width: 40rpx;
+  height: 40rpx;
+  margin-top: 30rpx;
+}
+.noHis{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+}

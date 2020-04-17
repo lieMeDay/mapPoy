@@ -1,0 +1,15 @@
+<!--pages/history.wxml-->
+<view>
+	<navigator class="listBox" wx:for="{{dataList}}" wx:key="index" url="/pages/seeM/seeM?openKey={{item.openKey}}">
+		<view class="listCon">
+			<view>{{item.time}}</view>
+			<view>{{item.dis}}KM</view>
+			<view>{{item.useTime}}</view>
+		</view>
+   <view class="more"> <image src="/images/more.png"></image></view>
+	</navigator>
+	
+	<view class="noHis" wx:if="{{dataList.length==0}}">
+	无运动记录
+	</view>
+</view>
