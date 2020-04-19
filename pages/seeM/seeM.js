@@ -15,7 +15,7 @@ Page({
     useTrueTime: '00:00:00', // 将useTime转为时分秒
     longitude: '', //中心经度
     latitude: '', //中心纬度
-    markers: '', // 个人点
+    markers: [], // 个人点
     polyline: [{
       points: [],
       color: "#FF0000DD",
@@ -48,15 +48,13 @@ Page({
       return b + "'" + c + "\""
     }
   },
-  // 补0
-  formatBit(val) {
-    val = +val
-    return val > 9 ? val : '0' + val
-  },
   // 秒转时分秒
   formatSeconds(time) {
     let min = Math.floor(time % 3600)
-    let val = this.formatBit(Math.floor(time / 3600)) + ':' + this.formatBit(Math.floor(min / 60)) + ':' + this.formatBit(time % 60)
+    let hh = Math.floor(time / 3600) > 9 ? Math.floor(time / 3600) : '0' + Math.floor(time / 3600)
+    let mm = Math.floor(min / 60) > 9 ? Math.floor(min / 60) : '0' + Math.floor(min / 60)
+    let ss = time % 60 > 9 ? time % 60 : '0' + time % 60
+    let val = hh + ':' + mm + ':' + ss
     return val
   },
   getData(openKey) {
@@ -77,14 +75,28 @@ Page({
         poyp.push(emp)
       })
       that.setData({
-        nowDate:openKey.openKey.split('%@%')[1],
+        nowDate: openKey.openKey.split('%@%')[1],
         longitude: lastRec.longitude, //中心经度
         latitude: lastRec.latitude, //中心纬度
-        markers: [lastRec.longitude, lastRec.latitude], // 个人点
+        markers: [{
+          iconPath: "/images/first.png",
+          id: 0,
+          latitude: record[0].latitude,
+          longitude: record[0].longitude,
+          width: 20,
+          height: 25
+        },{
+          iconPath: "/images/last.png",
+          id: 0,
+          latitude: lastRec.latitude,
+          longitude: lastRec.longitude,
+          width: 20,
+          height: 25
+        }], // 个人点
         'polyline[0].points': poyp,
         distance: lastRec.distance,
         useTrueTime: that.formatSeconds(parseInt(lastRec.useTime / 1000)),
-        speed: lastRec.distance > 0 && parseInt(lastRec.useTime / 1000) > 0 ? that.forPace(lastRec.distance / parseInt(lastRec.useTime / 1000)) : "--'--\""
+        speed: lastRec.distance > 0 && parseInt(lastRec.useTime / 1000) / 60 > 0 ? that.forPace((parseInt(lastRec.useTime / 1000) / 60) / lastRec.distance) : "--'--\""
       })
       that.getpoint(record)
     })
@@ -103,7 +115,7 @@ Page({
     let smArr = []
     let disArr = poyLP.map(x => x.distance)
     // console.log('disArr:', disArr)
-    let lastAOB=poyLP[poyLP.length - 1] //最后一项
+    let lastAOB = poyLP[poyLP.length - 1] //最后一项
     let lastDis = poyLP[poyLP.length - 1].distance
     // let lastDis=3.2
     // console.log(lastDis)
@@ -121,26 +133,30 @@ Page({
           // i 最接近该距离的下标
           let i = util.lookupNear(disArr, n)
           let hm = 0
+          let useHm=0
+          useHm=parseInt(Number(poyLP[i].useTime) / 1000)
+          // console.log(poyLP[i],useHm,that.formatSeconds(useHm))
           // 所用时间秒
           if (n == 1) {
             hm = parseInt(Number(poyLP[i].time - poyLP[0].time) / 1000)
           } else {
             hm = parseInt(Number(poyLP[i].time - poyLP[util.lookupNear(disArr, n - 1)].time) / 1000)
           }
-          // console.log(hm)
+          // console.log(hm,useHm)
           smArr.push({
             Num: n,
             dd: '1',
-            useTime: that.formatSeconds(hm),
+            useTime: that.formatSeconds(useHm),
             meanPace: that.forPace((hm / 60) / 1)
           })
         }
         if (util.floatSub(lastDis, lB) > 0) {
           let hm = parseInt(Number(poyLP[poyLP.length - 1].time - poyLP[util.lookupNear(disArr, n)].time) / 1000)
+          let useHm= parseInt(Number(poyLP[poyLP.length - 1].useTime) / 1000)
           smArr.push({
             Num: ++n,
             dd: util.floatSub(lastDis, lB),
-            useTime: that.formatSeconds(hm),
+            useTime: that.formatSeconds(useHm),
             meanPace: that.forPace((hm / 60) / util.floatSub(lastDis, lB))
           })
         }
@@ -148,19 +164,19 @@ Page({
           Num: '总计',
           dd: lastDis,
           useTime: that.data.useTrueTime,
-          meanPace: that.forPace(((lastAOB.useTime/1000) / 60) / lastDis)
+          meanPace: that.forPace(((lastAOB.useTime / 1000) / 60) / lastDis)
         })
       } else {
         smArr.push({
           Num: 1,
           dd: lastDis,
           useTime: that.data.useTrueTime,
-          meanPace: that.forPace(((lastAOB.useTime/1000) / 60) / lastDis)
+          meanPace: that.forPace(((lastAOB.useTime / 1000) / 60) / lastDis)
         }, {
           Num: '总计',
           dd: lastDis,
           useTime: that.data.useTrueTime,
-          meanPace: that.forPace(((lastAOB.useTime/1000) / 60) / lastDis)
+          meanPace: that.forPace(((lastAOB.useTime / 1000) / 60) / lastDis)
         })
       }
       that.setData({

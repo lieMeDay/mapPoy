@@ -44,7 +44,7 @@
 				<view class="alertTit">
 					<view>段数</view>
 					<view>距离</view>
-					<view>用时</view>
+					<view>总用时</view>
 					<view>平均配速</view>
 				</view>
 				<view class="showCon" wx:for="{{partArr}}" wx:key="index">

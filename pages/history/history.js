@@ -29,28 +29,37 @@ Page({
       data: openId,
     }).then(suc => {
       let aa = []
-        suc.data.data.forEach(v => {
-          tool({
-            url: "/run/getPersonDataByKey",
-            data: {
-              openKey: v
-            },
-          }).then(res => {
-            // console.log(res)
-            let lastd = res.data.data[res.data.data.length - 1]
-            let emp = {
-              openKey:v,
-              time: v.split('%@%')[1],
-              dis: lastd ? lastd.distance : '0',
-              useTime: lastd ? that.formatSeconds(parseInt((lastd.useTime) / 1000)) : '00:00:00'
-            }
-            aa.push(emp)
-            // console.log(aa)
-            that.setData({
-              dataList:aa
-            })
+      suc.data.data.forEach(v => {
+        tool({
+          url: "/run/getPersonDataByKey",
+          data: {
+            openKey: v
+          },
+        }).then(res => {
+          // console.log(res)
+          let lastd = res.data.data[res.data.data.length - 1]
+          let emp = {
+            openKey: v,
+            time: v.split('%@%')[1],
+            dis: lastd ? lastd.distance : '0',
+            useTime: lastd ? that.formatSeconds(parseInt((lastd.useTime) / 1000)) : '00:00:00'
+          }
+          aa.push(emp)
+          var dateToTime = function (str) {
+            return (new Date(str.replace(/-/g, '/'))).getTime(); //用/替换日期中的-是为了解决Safari的兼容
+          }
+          for (var i = 0; i < aa.length; i++) {
+            aa[i].publishTimeNew = dateToTime(aa[i].time);
+          }
+          aa.sort(function (a, b) {
+            return b.publishTimeNew > a.publishTimeNew ? 1 : -1;
+          });
+          // console.log(aa)
+          that.setData({
+            dataList: aa
           })
         })
+      })
     })
   },
   /**
