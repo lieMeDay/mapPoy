@@ -74,6 +74,10 @@ App({
       }
     })
   },
+  onHide () {
+    console.log('app===>onHide')
+    // Do something when hide.
+  },
   globalData: {
     userInfo: null,
     openId:''

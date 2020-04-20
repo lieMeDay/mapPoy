@@ -13,10 +13,10 @@ Page({
     openId: '',
     openKey: '',
     nowDate: '', //当前时间
-    startData:{
-      trueDis:0,
-      arr:[],
-      objStorage:[]
+    startData: {
+      trueDis: 0,
+      arr: [],
+      objStorage: []
     },
     timer: '', //计时器 计时时间
     useTime: 0, //使用时间 秒数
@@ -71,6 +71,7 @@ Page({
         this.getLoc(1)
       }
     } else {
+      console.log(33)
       // 在没有 open-type=getUserInfo 版本的兼容处理
       wx.getUserInfo({
         success: res => {
@@ -174,6 +175,9 @@ Page({
             that.startBind()
           })
         } else {
+          wx.authorize({
+            scope: 'scope.userLocationBackground'
+          })
           that.setData({
             beginEnd: false
           })
@@ -226,13 +230,13 @@ Page({
   // 开始执行
   startBind() {
     let that = this
-    let abc={
-      trueDis:0,
-      arr:[],
-      objStorage:[]
+    let abc = {
+      trueDis: 0,
+      arr: [],
+      objStorage: []
     }
     that.setData({
-      startData:abc
+      startData: abc
     })
     that.setData({
       beginEnd: true
@@ -420,10 +424,10 @@ Page({
   // 秒转时分秒
   formatSeconds(time) {
     let min = Math.floor(time % 3600)
-    let hh=Math.floor(time / 3600)>9?Math.floor(time / 3600):'0'+Math.floor(time / 3600)
-    let mm=Math.floor(min / 60)>9?Math.floor(min / 60):'0'+Math.floor(min / 60)
-    let ss=time % 60>9?time % 60:'0'+time % 60
-    let val = hh+':'+mm+':'+ss
+    let hh = Math.floor(time / 3600) > 9 ? Math.floor(time / 3600) : '0' + Math.floor(time / 3600)
+    let mm = Math.floor(min / 60) > 9 ? Math.floor(min / 60) : '0' + Math.floor(min / 60)
+    let ss = time % 60 > 9 ? time % 60 : '0' + time % 60
+    let val = hh + ':' + mm + ':' + ss
     return val
   },
   // 是否显示分段
@@ -463,9 +467,9 @@ Page({
               // i 最接近该距离的下标
               let i = util.lookupNear(disArr, n)
               let hm = 0
-              let useHm=0
+              let useHm = 0
               // 该项 - 第一项的时间戳为使用时间
-              useHm= parseInt(Number(res.data[i].split('...')[0] - res.data[0].split('...')[0]) / 1000)
+              useHm = parseInt(Number(res.data[i].split('...')[0] - res.data[0].split('...')[0]) / 1000)
               // 所用时间秒
               if (n == 1) {
                 hm = parseInt(Number(res.data[i].split('...')[0] - res.data[0].split('...')[0]) / 1000)
@@ -482,7 +486,7 @@ Page({
             }
             if (util.floatSub(lastDis, lB) > 0) {
               let hm = parseInt(Number(res.data[res.data.length - 1].split('...')[0] - res.data[util.lookupNear(disArr, n)].split('...')[0]) / 1000)
-              let useHm=parseInt(Number(res.data[res.data.length - 1].split('...')[0]- res.data[0].split('...')[0]) / 1000)
+              let useHm = parseInt(Number(res.data[res.data.length - 1].split('...')[0] - res.data[0].split('...')[0]) / 1000)
               smArr.push({
                 Num: ++n,
                 dd: util.floatSub(lastDis, lB),
@@ -520,6 +524,57 @@ Page({
         })
       }
     })
+  },
+  // 点击照相
+  takePictures: function () {
+    var that = this;
+    wx.chooseImage({
+      count: 1, // 默认9
+      sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+      sourceType: ['camera'], // 可以指定来源是相册还是相机，默认二者都有
+      success: function (res) {
+        console.log(res)
+        // 返回选定照片的本地文件路径列表，tempFilePath可以作为img标签的src属性显示图片
+        var tempFilePaths = res.tempFilePaths;
+        let mark=that.data.markers
+        mark.push({
+          iconPath: tempFilePaths[0],
+          // id: 0,
+          latitude: that.data.latitude,
+          longitude:that.data.longitude,
+          width: 20,
+          height: 25
+        })
+        that.setData({
+          markers:mark
+        })
+
+        // // 上传图片
+        // //判断机型
+        // var model = "";
+        // wx.getSystemInfo({
+        //   success: function (res) {
+        //     var that = this;
+        //     model = res.model;
+        //   }
+        // })
+        // if (model.indexOf("iPhone") <= 0) {
+        //   // that.uploadFileOpt(that.data.attendSuccessImg);
+        //   console.log(111111)
+        // } else {
+        //   drawCanvas();
+
+        // }
+
+        // // 缩放图片
+        // function drawCanvas() {
+        //   const ctx = wx.createCanvasContext('attendCanvasId');
+        //   ctx.drawImage(tempFilePaths[0], 0, 0, 94, 96);
+        //   ctx.draw();
+        //   that.prodImageOpt();
+        // }
+      }
+    });
   },
   /**
    * 生命周期函数--监听页面加载

@@ -1,9 +1,32 @@
-/* pages/history.wxss */
+/* 向左滑动实现删除操作 */
+view {
+  box-sizing: border-box;
+}
+
+.item-box {
+  margin: 0 auto;
+}
+
+.items {
+  width: 100%;
+}
+
+.item {
+  position: relative;
+  background-color: #2f2f2f;
+  border-bottom: 1px solid #444444;
+  height: 100rpx;
+  line-height: 100rpx;
+  overflow: hidden;
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
 .listBox {
   width: 100%;
   line-height: 100rpx;
-  border-bottom: 1px solid #444444;
-  background-color: #2f2f2f;
   color: #fff;
   display: flex;
 }
@@ -28,6 +51,39 @@
   width: 40rpx;
   height: 40rpx;
   margin-top: 30rpx;
+}
+
+.inner {
+  position: absolute;
+  top: 0;
+}
+
+.inner.txt {
+  font-family: "Monaco;";
+  width: 100%;
+  z-index: 5;
+  /* padding: 0 10rpx; */
+  transition: left 0.2s ease-in-out;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.inner.del {
+  font-family: "Monaco;";
+  background-color: #e64340;
+width: 180rpx;
+  text-align: center;
+  z-index: 4;
+  right: -180rpx;
+  color: #fff
+}
+
+.item-icon {
+  width: 64rpx;
+  height: 120rpx;
+  vertical-align: middle;
+  margin-right: 16rpx
 }
 .noHis{
   position: absolute;

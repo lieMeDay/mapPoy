@@ -1,6 +1,11 @@
 <!--pages/history.wxml-->
 <view>
-	<navigator class="listBox" wx:for="{{dataList}}" wx:key="index" url="/pages/seeM/seeM?openKey={{item.openKey}}">
+	<!-- 自定义单选/多选/全选实现删除功能 -->
+<view class="item-box">
+	<view class="items">
+		<view wx:for="{{list}}" wx:key="index" class="item">
+			<view bindtouchstart="touchS" bindtouchmove="touchM" bindtouchend="touchE" data-index="{{index}}" style="{{item.txtStyle}}" class="inner txt">
+      <navigator class="listBox" url="/pages/seeM/seeM?openKey={{item.openKey}}">
 		<view class="listCon">
 			<view>{{item.time}}</view>
 			<view>{{item.dis}}KM</view>
@@ -8,7 +13,11 @@
 		</view>
    <view class="more"> <image src="/images/more.png"></image></view>
 	</navigator>
-	
+      </view>
+			<view data-index="{{index}}" data-openKey="{{item.openKey}}" bindtap="delItem" class="inner del" style="{{item.delStyle}}">删除</view>
+		</view>
+	</view>
+</view>
 	<view class="noHis" wx:if="{{dataList.length==0}}">
 	无运动记录
 	</view>

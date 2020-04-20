@@ -6,6 +6,18 @@
   top: 0;
   left: 0;
 }
+.camera{
+  position: absolute;
+  z-index: 20;
+  width: 80rpx;
+  height: 80rpx;
+  right: 10rpx;
+  bottom: 10rpx;
+}
+.camera>image{
+  width: 100%;
+  height: 100%;
+}
 
 .UserWrap {
   width: 100%;

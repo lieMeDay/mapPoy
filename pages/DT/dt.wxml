@@ -3,6 +3,9 @@
 	<view class="mapBox">
 		<map id="map" longitude="{{longitude}}" latitude="{{latitude}}" markers="{{markers}}" polyline="{{polyline}}" enable-rotate show-location style="width: 100%; height: 100%;position:absolute;"></map>
 		<!-- scale="{{scaletrue}}"  -->
+		<view class="camera" bindtap="takePictures">
+		<image src="/images/camera.png"></image>
+		</view>
 	</view>
 	<view class="UserWrap">
 		<view class="btnCirle">
