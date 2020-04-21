@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/DT/dt",
+    "pages/index/index",
     "pages/pic/pic",
     "pages/history/history",
     "pages/seeM/seeM"

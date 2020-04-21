@@ -1,0 +1,60 @@
+/* pages/index/index.wxss */
+.page {
+  background: #f0f1f5;
+  width: 100%;
+  min-height: 100%;
+  position: absolute;
+}
+.con {
+  width: 95%;
+  margin: 10px auto;
+  overflow: hidden;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}
+.con_cen {
+  width: 92%;
+  margin: 10px auto;
+}
+.tit {
+  /* text-align: center; */
+  margin: 5px 0;
+}
+.tit > text {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 40px;
+  /* border-bottom: 1px solid #ccc; */
+  width: 40%;
+  display: inline-block;
+  text-indent: 15px;
+}
+.con_img {
+  width: 100%;
+  min-height: 120px;
+  display: block;
+  margin: 5px auto;
+  /* border-radius: 10px; */
+}
+.sm_tit {
+  display: block;
+  font-size: 14px;
+  font-family: PingFang-SC-Bold;
+  font-weight: 500;
+  color: #666666;
+}
+.sm_data {
+  display: block;
+  font-size: 13px;
+  font-family: DIN-Medium;
+  font-weight: Medium;
+  color: #afafaf;
+}
+.zanNo {
+  margin-bottom: 10px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 500;
+  color: #999;
+}

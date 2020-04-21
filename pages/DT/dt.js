@@ -6,7 +6,7 @@ let {
 } = getApp()
 Page({
 
-  /**
+  /*
    * 页面的初始数据
    */
   data: {
@@ -28,7 +28,7 @@ Page({
     state: false, // 第一次开始/暂停后开始
     longitude: '', //中心经度
     latitude: '', //中心纬度
-    markers: '', // 个人点
+    markers: [], // 个人点
     polyline: [{
       points: [],
       color: "#FF0000DD",
@@ -105,10 +105,12 @@ Page({
         const longitude = res.longitude
         const speed = res.speed
         const accuracy = res.accuracy
+        // let markMy = that.data.markers
+        // markMy[0] = [longitude, latitude]
         that.setData({
           longitude: longitude,
           latitude: latitude,
-          markers: [longitude, latitude]
+          // markers: markMy
         })
       },
       fail(err) {
@@ -116,7 +118,7 @@ Page({
         that.setData({
           longitude: 116.397128,
           latitude: 39.916527,
-          markers: [116.397128, 39.916527]
+          // markers: [116.397128, 39.916527]
         })
       }
     })
@@ -215,7 +217,27 @@ Page({
         let startTime = Number(res.data[0].split('...')[0])
         let nn = that.data.putN
         let newList = res.data.slice(100 * (nn - 1), res.data.length)
-        that.postPoyMsg(newList, startTime)
+        if (that.data.distance < 0.5) {
+          wx.showToast({
+            title: '距离不能小于500米',
+            icon:"none",
+            duration: 2000
+          })
+          // console.log(e)
+          let obj = {
+            openId: that.data.openId,
+            openKey: that.data.openId+'%@%'+that.data.openKey
+          }
+          // console.log(obj)
+          tool({
+            url: "/run/delPersonOneRaw",
+            data: obj,
+          }).then(suc => {
+            console.log(suc)
+          })
+        } else {
+          that.postPoyMsg(newList, startTime)
+        }
       }
     })
     wx.stopLocationUpdate({
@@ -297,8 +319,11 @@ Page({
         })
 
         // console.log(arr[arr.length - 1])
+        // let markMy = that.data.markers
+        // markMy[0] = that.data.startData.arr[that.data.startData.arr.length - 1]
+        // markMy[0].iconPath=""
         that.setData({
-          markers: that.data.startData.arr[that.data.startData.arr.length - 1],
+          // markers: markMy,
           longitude: that.data.startData.arr[that.data.startData.arr.length - 1]['longitude'],
           latitude: that.data.startData.arr[that.data.startData.arr.length - 1]['latitude'],
           'polyline[0].points': that.data.startData.arr
@@ -528,55 +553,73 @@ Page({
   // 点击照相
   takePictures: function () {
     var that = this;
-    wx.chooseImage({
-      count: 1, // 默认9
-      sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
-      sourceType: ['camera'], // 可以指定来源是相册还是相机，默认二者都有
-      success: function (res) {
-        console.log(res)
-        // 返回选定照片的本地文件路径列表，tempFilePath可以作为img标签的src属性显示图片
-        var tempFilePaths = res.tempFilePaths;
-        let mark=that.data.markers
-        mark.push({
-          iconPath: tempFilePaths[0],
-          // id: 0,
-          latitude: that.data.latitude,
-          longitude:that.data.longitude,
-          width: 20,
-          height: 25
-        })
-        that.setData({
-          markers:mark
-        })
+    if (that.data.openKey == '') {
+      wx.showModal({
+        title: '提示',
+        content: '请先开始',
+        showCancel: false,
+        success(res) {
+          if (res.confirm) {
+            console.log('用户点击确定')
+          }
+        }
+      })
+    } else {
+      wx.chooseImage({
+        count: 1, // 默认9
+        sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+        sourceType: ['camera'], // 可以指定来源是相册还是相机，默认二者都有
+        success: function (res) {
+          console.log(res)
+          // 返回选定照片的本地文件路径列表，tempFilePath可以作为img标签的src属性显示图片
+          var tempFilePaths = res.tempFilePaths;
+          let mark = that.data.markers
+          mark.push({
+            iconPath: tempFilePaths[0],
+            // id: 0,
+            latitude: that.data.latitude,
+            longitude: that.data.longitude,
+            width: 20,
+            height: 25
+          })
+          that.setData({
+            markers: mark
+          })
+          // // 上传图片
+          wx.uploadFile({
+            url: util.imgUrl + "/run/uploadImg",
+            filePath: tempFilePaths[0],
+            name: 'img',
+            success(res) {
+              const imgName = JSON.parse(res.data).data.img
+              console.log(imgName)
+              let imgUrl = util.imgUrl + '/run/query_pic?name=' + imgName
+              console.log(imgUrl)
 
-        // // 上传图片
-        // //判断机型
-        // var model = "";
-        // wx.getSystemInfo({
-        //   success: function (res) {
-        //     var that = this;
-        //     model = res.model;
-        //   }
-        // })
-        // if (model.indexOf("iPhone") <= 0) {
-        //   // that.uploadFileOpt(that.data.attendSuccessImg);
-        //   console.log(111111)
-        // } else {
-        //   drawCanvas();
-
-        // }
-
-        // // 缩放图片
-        // function drawCanvas() {
-        //   const ctx = wx.createCanvasContext('attendCanvasId');
-        //   ctx.drawImage(tempFilePaths[0], 0, 0, 94, 96);
-        //   ctx.draw();
-        //   that.prodImageOpt();
-        // }
-      }
-    });
+              let target = {
+                openId: that.data.openId,
+                openKey: that.data.openKey,
+                time: new Date().getTime(),
+                longitude: that.data.longitude,
+                latitude: that.data.latitude,
+                distance: that.data.distance,
+                useTime: that.data.useTime * 1000,
+                img: imgUrl
+              }
+              tool({
+                url: '/run/addPersonDataImg',
+                data: target,
+                method: "POST"
+              }).then(resolve => {
+                console.log(resolve.data)
+              })
+            }
+          })
+        }
+      });
+    }
   },
-  /**
+  /*
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {

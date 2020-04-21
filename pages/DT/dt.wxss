@@ -11,8 +11,8 @@
   z-index: 20;
   width: 80rpx;
   height: 80rpx;
-  right: 10rpx;
-  bottom: 10rpx;
+  right: 12rpx;
+  bottom: 22rpx;
 }
 .camera>image{
   width: 100%;

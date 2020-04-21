@@ -74,25 +74,46 @@ Page({
         }
         poyp.push(emp)
       })
-      that.setData({
-        nowDate: openKey.openKey.split('%@%')[1],
-        longitude: lastRec.longitude, //中心经度
-        latitude: lastRec.latitude, //中心纬度
-        markers: [{
+      tool({
+        url:"/run/getPersonDataImg",
+        data: openKey,
+      }).then(succe=>{
+        console.log(succe)
+        let a=[{
           iconPath: "/images/first.png",
           id: 0,
           latitude: record[0].latitude,
           longitude: record[0].longitude,
           width: 20,
           height: 25
-        },{
+        }]
+        succe.data.data.forEach(vv=>{
+          let o={
+            iconPath: vv.img,
+            id: 0,
+            latitude: vv.latitude,
+            longitude: vv.longitude,
+            width: 20,
+            height: 25
+          }
+          a.push(o)
+        })
+        a.push({
           iconPath: "/images/last.png",
           id: 0,
           latitude: lastRec.latitude,
           longitude: lastRec.longitude,
           width: 20,
           height: 25
-        }], // 个人点
+        })
+        that.setData({
+          markers:a
+        })
+      })
+      that.setData({
+        nowDate: openKey.openKey.split('%@%')[1],
+        longitude: lastRec.longitude, //中心经度
+        latitude: lastRec.latitude, //中心纬度
         'polyline[0].points': poyp,
         distance: lastRec.distance,
         useTrueTime: that.formatSeconds(parseInt(lastRec.useTime / 1000)),

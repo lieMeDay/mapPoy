@@ -40,9 +40,11 @@ const getDistance = (lat1, lng1, lat2, lng2) => {
   return s;
 }
 
+const imgUrl="http://192.168.1.24:9898"
+// const imgUrl = "https://paoner.lvtutech.com/aiyunpao/"
 const request = (options) => {
-  let BaseUrl = "https://paoner.lvtutech.com/aiyunpao/"
-  // let BaseUrl='http://192.168.1.24:9898'
+  // let BaseUrl = "https://paoner.lvtutech.com/aiyunpao/"
+  let BaseUrl='http://192.168.1.24:9898'
     return new Promise((resolve, reject)=>{
       if (!options.method) {
         options.method = "GET"
@@ -170,6 +172,7 @@ module.exports = {
   getNowDate: getNowDate,
   getDistance: getDistance,
   tool: request,
+  imgUrl:imgUrl,
   lookupNear: lookupNear,
   floatAdd:floatAdd,
   floatSub:floatSub,

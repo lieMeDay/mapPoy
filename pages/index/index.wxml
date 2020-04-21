@@ -1,0 +1,14 @@
+<view class="page">
+    <view class="con">
+      <view class="tit">
+        <text>历史回顾</text>
+      </view>
+      <!-- @click="go_map(item.ak)" -->
+      <view wx:for="{{Historical}}" wx:key="index" class="con_cen">
+        <image class="con_img" :src="item.logo"></image>
+        <text class="sm_tit">{{item.name}}</text>
+        <text class="sm_data">{{item.matchDate}}</text>
+      </view>
+      <view class="zanNo" v-if="{{Historical==''}}">暂无</view>
+    </view>
+</view>

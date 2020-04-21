@@ -80,7 +80,7 @@ App({
   },
   globalData: {
     userInfo: null,
-    openId:''
+    openId:'',
   },
   tool: utils.tool,
 })
