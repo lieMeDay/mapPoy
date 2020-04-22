@@ -1,8 +1,7 @@
 {
   "pages": [
-    "pages/DT/dt",
     "pages/index/index",
-    "pages/pic/pic",
+    "pages/DT/dt",
     "pages/history/history",
     "pages/seeM/seeM"
   ],

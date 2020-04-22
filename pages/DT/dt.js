@@ -43,6 +43,7 @@ Page({
   },
   // onload 获取授权
   getuser() {
+    // 获取openId
     if (app.globalData.openId) {
       this.setData({
         openId: app.globalData.openId,
@@ -54,6 +55,8 @@ Page({
         })
       }
     }
+    console.log(this.data.openId)
+    // 获取用户基本信息
     if (app.globalData.userInfo) {
       this.setData({
         userInfo: app.globalData.userInfo,
@@ -71,7 +74,6 @@ Page({
         this.getLoc(1)
       }
     } else {
-      console.log(33)
       // 在没有 open-type=getUserInfo 版本的兼容处理
       wx.getUserInfo({
         success: res => {

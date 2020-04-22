@@ -3,9 +3,10 @@
 		<view class="headView">
 			<view class="headImageView"><image class="headImage" src="/images/wx_login.jpg" mode="scaleToFill"></image></view>
 			<view class="titleText">申请获取以下权限</view>
-			<view class="contentText">获得你的公开信息(昵称,头像,手机等)</view>
-			<button type="primary" class="authBtn" open-type="getUserInfo" bindgetuserinfo="getUserInfo">
+			<view class="contentText">获得你的公开信息(昵称,头像等)</view>
+			<button wx:if="{{!hasInfo}}" type="primary" class="authBtn" open-type="getUserInfo" bindgetuserinfo="getUserInfo">
 				授权登录
 			</button>
+			<button wx:else type="primary" class="authBtn" open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber">获取您的手机号</button>
 		</view>
 	</view>

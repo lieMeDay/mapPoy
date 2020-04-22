@@ -1,4 +1,0 @@
-<view bindtap='takePictures'>选择图片</view>
-<canvas canvas-id="attendCanvasId" style="width:300px;height:300px;position: absolute;left:-300px;top:-300px"></canvas>
-<image src="{{attendSuccessImg}}"></image>
-<button bindtap="audio">111</button>

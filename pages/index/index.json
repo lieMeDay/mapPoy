@@ -1,4 +1,6 @@
 {
-  "usingComponents": {},
+  "usingComponents": {
+    "logon": "/commponents/logon/logon"
+  },
   "navigationBarTitleText": "首页"
 }

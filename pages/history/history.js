@@ -26,7 +26,7 @@ Page({
     return val
   },
   getList(openId) {
-    openId={openId:'oy5TU5B3GEmPBjqQgG7LEHgsW3cc'}
+    // openId={openId:'oy5TU5OfDpGiRl9dp6DhX0zoGzgQ'}
     let that = this
     tool({
       url: "/run/getPerson",

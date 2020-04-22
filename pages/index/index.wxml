@@ -1,4 +1,5 @@
 <view class="page">
+<logon></logon>
     <view class="con">
       <view class="tit">
         <text>历史回顾</text>

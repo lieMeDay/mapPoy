@@ -1,4 +1,5 @@
 // pages/index/index.js
+const app = getApp()
 Page({
 
   /**
@@ -7,12 +8,34 @@ Page({
   data: {
     Historical:[]
   },
+  watchBack: function (name){
+    console.log(22222);
+    console.log('this.name==' + name)
+  },
+  // 判断登录
+  JudgeLogin(){
+    let that=this
+    app.watch(that.watchBack)
+    // if (app.globalData.openId) {
+    //   this.setData({
+    //     openId: app.globalData.openId,
+    //   })
+    // } else {
+    //   app.CallbackFn = res => {
+    //     this.setData({
+    //       openId: res.data.data.openid
+    //     })
+    //   }
+    // }
+  },
+  getMatch(){
 
+  },
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-
+    this.JudgeLogin()
   },
 
   /**

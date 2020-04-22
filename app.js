@@ -2,54 +2,91 @@
 var utils = require('./utils/util.js')
 App({
   onLaunch: function () {
+    setTimeout(function(){
+      that.globalData.name  = 'pxh'
+    },3000) 
+    setTimeout(function(){
+      that.globalData.name  = 'bbb'
+    },6000) 
     wx.removeStorage({
       key: 'paobugji',
-      success (res) {
+      success(res) {
         // console.log(res)
       }
     })
-    // 展示本地存储能力
-    // var logs = wx.getStorageSync('logs') || []
-    // logs.unshift(Date.now())
-    // wx.setStorageSync('logs', logs)
-    let that=this
+    let that = this
     // 登录
     wx.login({
       success: res => {
         // 发送 res.code 到后台换取 openId, sessionKey, unionId
-        console.log(res)
-        let APPID='wxbf160c13ec5871ef'
-        let SECRET='b0013939e826bda6b73b13e5c867e411'
-        let JSCODE=res.code
+        // console.log(res)
+        // let APPID='wxbf160c13ec5871ef'
+        // let SECRET='b0013939e826bda6b73b13e5c867e411'
+        let JSCODE = res.code
         utils.tool({
           url: "/run/getOpenId",
           data: {
             code: JSCODE
           },
-        }).then(res=>{
-          console.log(res)
-          that.globalData.openId=res.data.data.openid
-              if (that.CallbackFn) {
-              // 如果有说明，onLoad中没有拿到值，把结果当参数再传入回调中
-              that.CallbackFn(res);
+        }).then(res => {
+          // console.log(res)
+          that.globalData.openId = res.data.data.openid
+          that.globalData.sessionKey = res.data.data.session_key
+          if (that.CallbackFn) {
+            // 如果有说明，onLoad中没有拿到值，把结果当参数再传入回调中
+            that.CallbackFn(res);
           }
+          utils.tool({
+            url: "/run/getUser",
+            data: {
+              openId: res.data.data.openid
+            },
+          }).then(val => {
+            console.log(val.data.data)
+            if (val.data.data) {
+              if (val.data.data.phone) {
+                wx.getUserInfo({
+                  success: res => {
+                    // openId    nikeName   sex  city   phone  headImgUrl
+                    let newObj = {
+                      openId:val.data.data.openId,
+                      phone:val.data.data.phone,
+                      nikeName: res.userInfo.nickName,
+                      sex: res.userInfo.gender == 0 ? '未知' : res.userInfo.gender == 1 ? '男' : '女',
+                      city: res.userInfo.city,
+                      headImgUrl: res.userInfo.avatarUrl
+                    }
+                    let truly=function(){
+                      for(var k in newObj){
+                        if(newObj[k]!=val.data.data[k]){
+                          return k
+                        }
+                      }
+                    }()
+                    // console.log(truly)
+                    if(truly){
+                      // console.log(111)
+                      // let objMsg={}
+                      // utils.tool({
+                      //   url:"/run/putUser",
+                      //   data:''
+                      // })
+                    }
+
+
+                  }
+                })
+              } else {
+                that.globalData.showLogon = true
+              }
+            } else {
+              that.globalData.showLogon = true
+            }
+          })
         })
-        // wx.request({
-        //   url: `https://api.weixin.qq.com/sns/jscode2session?appid=${APPID}&secret=${SECRET}&js_code=${JSCODE}&grant_type=authorization_code`,
-        //   success (res) {
-        //     console.log(res.data)
-        //     that.globalData.openId=res.data.openid
-        //     if (that.CallbackFn) {
-        //       // 如果有说明，onLoad中没有拿到值，把结果当参数再传入回调中
-        //       that.CallbackFn(res);
-        //   }
-        //   }
-        // })
       },
-      fail:err=>{
+      fail: err => {
         console.log(err)
-      },
-      complete(r){
       }
     })
     // 获取用户信息
@@ -70,17 +107,37 @@ App({
             }
           })
         }
-      
+
       }
     })
   },
-  onHide () {
-    console.log('app===>onHide')
-    // Do something when hide.
+  // onHide () {
+  //   console.log('app===>onHide')
+  //   // Do something when hide.
+  // },
+  watch:function(method){
+    console.log(method)
+    var obj = this.globalData;
+    Object.defineProperty(obj,"name", {
+      configurable: true,
+      enumerable: true,
+      set: function (value) {
+        console.log(value)
+        this._name = value;
+        console.log('是否会被执行2')
+        method(value);
+      },
+      get:function(){
+      // 可以在这里打印一些东西，然后在其他界面调用getApp().globalData.name的时候，这里就会执行。
+        return this._name
+      }
+    })
   },
   globalData: {
+    showLogon: false, //判断是否显示登陆
     userInfo: null,
-    openId:'',
+    openId: '',
+    name:'aaa'
   },
   tool: utils.tool,
 })
