@@ -1,9 +1,7 @@
 // pages/aa/aa.js
 const app = getApp()
 var util = require('../../utils/util.js')
-let {
-  tool
-} = getApp()
+let tool = getApp().tool
 Page({
 
   /*

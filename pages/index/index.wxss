@@ -33,6 +33,7 @@
 .con_img {
   width: 100%;
   min-height: 240rpx;
+  max-height: 280rpx;
   display: block;
   margin: 10rpx auto;
   /* border-radius: 10px; */

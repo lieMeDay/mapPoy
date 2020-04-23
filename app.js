@@ -2,12 +2,6 @@
 var utils = require('./utils/util.js')
 App({
   onLaunch: function () {
-    setTimeout(function(){
-      that.globalData.name  = 'pxh'
-    },3000) 
-    setTimeout(function(){
-      that.globalData.name  = 'bbb'
-    },6000) 
     wx.removeStorage({
       key: 'paobugji',
       success(res) {
@@ -31,7 +25,6 @@ App({
         }).then(res => {
           // console.log(res)
           that.globalData.openId = res.data.data.openid
-          that.globalData.sessionKey = res.data.data.session_key
           if (that.CallbackFn) {
             // 如果有说明，onLoad中没有拿到值，把结果当参数再传入回调中
             that.CallbackFn(res);
@@ -45,6 +38,7 @@ App({
             console.log(val.data.data)
             if (val.data.data) {
               if (val.data.data.phone) {
+                that.globalData.showLogon = false
                 wx.getUserInfo({
                   success: res => {
                     // openId    nikeName   sex  city   phone  headImgUrl
@@ -72,16 +66,20 @@ App({
                       //   data:''
                       // })
                     }
-
-
                   }
                 })
               } else {
                 that.globalData.showLogon = true
               }
             } else {
+              console.log('6666')
               that.globalData.showLogon = true
             }
+          if (that.CallbackShowLogon) {
+            // console.log(that.globalData.showLogon)
+            // 如果有说明，onLoad中没有拿到值，把结果当参数再传入回调中
+            that.CallbackShowLogon(that.globalData.showLogon);
+          }
           })
         })
       },
@@ -115,29 +113,10 @@ App({
   //   console.log('app===>onHide')
   //   // Do something when hide.
   // },
-  watch:function(method){
-    console.log(method)
-    var obj = this.globalData;
-    Object.defineProperty(obj,"name", {
-      configurable: true,
-      enumerable: true,
-      set: function (value) {
-        console.log(value)
-        this._name = value;
-        console.log('是否会被执行2')
-        method(value);
-      },
-      get:function(){
-      // 可以在这里打印一些东西，然后在其他界面调用getApp().globalData.name的时候，这里就会执行。
-        return this._name
-      }
-    })
-  },
   globalData: {
-    showLogon: false, //判断是否显示登陆
+    showLogon: null, //判断是否显示登陆
     userInfo: null,
-    openId: '',
-    name:'aaa'
+    openId: ''
   },
   tool: utils.tool,
 })

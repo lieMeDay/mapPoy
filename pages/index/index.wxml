@@ -1,15 +1,34 @@
 <view class="page">
-<logon></logon>
-    <view class="con">
-      <view class="tit">
-        <text>历史回顾</text>
-      </view>
-      <!-- @click="go_map(item.ak)" -->
-      <view wx:for="{{Historical}}" wx:key="index" class="con_cen">
-        <image class="con_img" :src="item.logo"></image>
-        <text class="sm_tit">{{item.name}}</text>
-        <text class="sm_data">{{item.matchDate}}</text>
-      </view>
-      <view class="zanNo" v-if="{{Historical==''}}">暂无</view>
-    </view>
+	<logon wx:if="{{showLogon}}"></logon><view class="con">
+		<view class="tit">
+			<text>正在进行</text>
+		</view>
+		<view wx:for="{{hasBegin}}" wx:key="index" class="con_cen">
+			<image class="con_img" src="item.logo"></image>
+			<text class="sm_tit">{{item.name}}</text>
+			<text class="sm_data">{{item.matchDate}}</text>
+		</view>
+		<view class="zanNo" v-if="{{hasBegin==[]}}">暂无</view>
+	</view><view class="con">
+		<view class="tit">
+			<text>即将开始</text>
+		</view>
+		<navigator wx:for="{{WillBegin}}" wx:key="index" class="con_cen" url="/pages/">
+			<image class="con_img" src="{{item.logo}}"></image>
+			<text class="sm_tit">{{item.name}}</text>
+			<text class="sm_data">{{item.matchDate}}</text>
+		</navigator>
+		<view class="zanNo" v-if="{{WillBegin==[]}}">暂无</view>
+	</view>
+	<view class="con">
+		<view class="tit">
+			<text>历史回顾</text>
+		</view>
+		<view wx:for="{{Historical}}" wx:key="index" class="con_cen" >
+			<image class="con_img" src="{{item.logo}}"></image>
+			<text class="sm_tit">{{item.name}}</text>
+			<text class="sm_data">{{item.matchDate}}</text>
+		</view>
+		<view class="zanNo" v-if="{{Historical==[]}}">暂无</view>
+	</view>
 </view>
